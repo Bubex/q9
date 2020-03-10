@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image, Picker } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image, Picker, Modal, TouchableHighlight } from 'react-native';
 
 import api from '../services/api';
 
 export default function List() {
-    const [ breed, setBreed ] = useState('');
+
+// INÍCIO GERENCIAMENTO RAÇAS E LISTA DE IMAGENS
+    const [ breed, setBreed ] = useState('chihuahua');
     const [ images, setImages ] = useState([]);
 
     async function getList() {
@@ -17,14 +19,23 @@ export default function List() {
         getList();
     }, [breed]);
 
+// FIM GERENCIAMENTO DE RAÇAS E LISTA DE IMAGENS
+
+// INÍCIO MODAL
+
+    const [ modalImage, setModalImage ] = useState('');
+    const [ modalVisibility, setModalVisibility ] = useState(false);
+
+// FIM MODAL
+
     return (
         <View style={styles.container}>
             <Picker
                 selectedValue={breed}
                 style={styles.select}
-                onValueChange={setBreed}
+                onValueChange={breed => setBreed(breed)}
             >
-                <Picker.Item label="Chihuaua" value="chihuaua" />
+                <Picker.Item label="Chihuaua" value="chihuahua" />
                 <Picker.Item label="Husky" value="husky" />
                 <Picker.Item label="Labrador" value="labrador" />
                 <Picker.Item label="Pug" value="pug" />
@@ -38,8 +49,7 @@ export default function List() {
                 vertical
                 renderItem={({ item }) => (
                     <View style={styles.imageView}>
-                        <TouchableOpacity style={styles.imageTouch}>
-                            {/* <Text>TESTE</Text> */}
+                        <TouchableOpacity style={styles.imageTouch} onPress={() => { setModalImage(item); setModalVisibility(true); }}>
                             <Image 
                                 style={styles.image} 
                                 source={{ uri: item }}
@@ -49,6 +59,25 @@ export default function List() {
                 )}
             />
 
+            <Modal 
+                animationType={"slide"} transparent={false}
+                hardwareAccelerated={true}
+                visible={modalVisibility}
+                onRequestClose={() => { setModalImage(null); setModalVisibility(false); }}
+            >
+
+                <View style={styles.modal}>
+                    <Image
+                    style={{ width: '100%', height: 400, resizeMode: 'cover' }}
+                    source={{ uri: modalImage }}
+                    />
+
+                    <TouchableHighlight style={styles.touchableButton}
+                        onPress={() => { setModalImage(null); setModalVisibility(false); }}>
+                        <Text style={styles.text}>Fechar</Text>
+                    </TouchableHighlight>
+                </View>
+            </Modal>
         </View>
     );
 }
@@ -80,5 +109,23 @@ const styles = StyleSheet.create({
         flex: 1,
         resizeMode: 'cover',
         height: 150,
-    }
+    },
+    modal: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding : 10,
+    },
+    text: {
+        color: '#fff',
+        fontSize: 20,
+        textAlign: 'center',
+    },
+    touchableButton: {
+        width: '70%',
+        padding: 10,
+        backgroundColor: '#f07373',
+        marginBottom: 10,
+        marginTop: 30,
+    },
 });
