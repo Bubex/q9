@@ -1,32 +1,57 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image, Picker, Modal, TouchableHighlight } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image, Picker, Modal, TouchableHighlight, ActivityIndicator } from 'react-native';
 
 import api from '../services/api';
 
 export default function List() {
 
-// INÍCIO GERENCIAMENTO RAÇAS E LISTA DE IMAGENS
-    const [ breed, setBreed ] = useState('chihuahua');
-    const [ images, setImages ] = useState([]);
-
-    async function getList() {
-        const response = await api.get(`/list?breed=${breed}`);
-        setBreed(response.data.breed);
-        setImages(response.data.list);
-    }
-
-    useEffect(() => {
-        getList();
-    }, [breed]);
-
-// FIM GERENCIAMENTO DE RAÇAS E LISTA DE IMAGENS
-
-// INÍCIO MODAL
-
+    const [ loadingView, setLoadingView ] = useState(true);
+    
     const [ modalImage, setModalImage ] = useState('');
     const [ modalVisibility, setModalVisibility ] = useState(false);
 
-// FIM MODAL
+    const [ breed, setBreed ] = useState('chihuahua');
+    const [ images, setImages ] = useState([]);
+    const [ loadingImages, setLoadingImages ] = useState(false);
+    const [ currentPage, setCurrentPage ] = useState(1);
+    const [ displayedImages, setDisplayedImages ] = useState([]);
+    const sizePerPage = 9;
+
+    async function getList() {
+        setLoadingImages(true);
+
+        const response = await api.get(`/list?breed=${breed}`);
+
+        setBreed(response.data.breed);
+        setImages(response.data.list);
+        setCurrentPage(1);
+        setDisplayedImages(response.data.list.slice(0, sizePerPage));
+
+        setLoadingImages(false);
+        setLoadingView(false);
+    }
+
+    useEffect(() => {
+        setLoadingView(true);
+        getList();
+    }, [breed]);
+
+    function loadMoreImages() {
+        if (loadingImages) return;
+
+        setLoadingImages(true);
+        setDisplayedImages(displayedImages.concat(images.slice(currentPage * sizePerPage, currentPage * sizePerPage + sizePerPage)));
+        setCurrentPage(currentPage + 1);
+        setLoadingImages(false);
+    }
+
+    function renderFooter() {
+        return (
+            <View style={styles.loading}>
+                <ActivityIndicator />
+            </View>
+        );
+    }
 
     return (
         <View style={styles.container}>
@@ -44,9 +69,11 @@ export default function List() {
             <FlatList
                 numColumns={3}
                 style={styles.list}
-                data={images}
-                keyExtractor={(images, index) => index.toString()}
-                vertical
+                data={displayedImages}
+                keyExtractor={(displayedImages, index) => index.toString()}
+                onEndReached={loadMoreImages}
+                onEndReachedThreshold={0.05}
+                ListFooterComponent={renderFooter}
                 renderItem={({ item }) => (
                     <View style={styles.imageView}>
                         <TouchableOpacity style={styles.imageTouch} onPress={() => { setModalImage(item); setModalVisibility(true); }}>
@@ -60,13 +87,14 @@ export default function List() {
             />
 
             <Modal 
-                animationType={"slide"} transparent={false}
+                animationType={"slide"} transparent={true}
                 hardwareAccelerated={true}
                 visible={modalVisibility}
                 onRequestClose={() => { setModalImage(null); setModalVisibility(false); }}
+                style={styles.modal}
             >
 
-                <View style={styles.modal}>
+                <View style={styles.modalView}>
                     <Image
                     style={{ width: '100%', height: 400, resizeMode: 'cover' }}
                     source={{ uri: modalImage }}
@@ -76,6 +104,18 @@ export default function List() {
                         onPress={() => { setModalImage(null); setModalVisibility(false); }}>
                         <Text style={styles.text}>Fechar</Text>
                     </TouchableHighlight>
+                </View>
+            </Modal>
+
+            <Modal
+                animationType={"fade"} 
+                transparent={true}
+                hardwareAccelerated={true}
+                visible={loadingView}
+                style={styles.loadingModal}
+            >
+                <View style={styles.loadingViewModal}>
+                    <ActivityIndicator size="large" style={styles.loadingIndicator} />
                 </View>
             </Modal>
         </View>
@@ -112,9 +152,12 @@ const styles = StyleSheet.create({
     },
     modal: {
         flex: 1,
+    },
+    modalView: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.8)',
         alignItems: 'center',
-        justifyContent: 'center',
-        padding : 10,
+        justifyContent: 'center'
     },
     text: {
         color: '#fff',
@@ -128,4 +171,21 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         marginTop: 30,
     },
+    loading: {
+        paddingVertical: 50
+    },
+    loadingModal: {
+        flex: 1,
+    },
+    loadingViewModal: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.7)',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    loadingIndicator: {
+        // flex: 1,
+        width: 100,
+        height: 100
+    }
 });
