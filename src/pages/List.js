@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
     View,
     Text,
@@ -9,86 +9,86 @@ import {
     Picker,
     Modal,
     TouchableHighlight,
-    ActivityIndicator
-} from "react-native";
+    ActivityIndicator,
+} from 'react-native';
 
-import api from "../services/api";
+import api from '../services/api';
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        alignSelf: "stretch"
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignSelf: 'stretch',
     },
     select: {
         width: 150,
         fontSize: 20,
-        marginTop: 40
+        marginTop: 40,
     },
     list: {
         flex: 1,
-        alignSelf: "stretch",
-        marginTop: 20
+        alignSelf: 'stretch',
+        marginTop: 20,
     },
     imageView: {
-        flex: 1
+        flex: 1,
     },
     imageTouch: {
-        flex: 1
+        flex: 1,
     },
     image: {
         flex: 1,
-        resizeMode: "cover",
-        height: 150
+        resizeMode: 'cover',
+        height: 150,
     },
     modal: {
-        flex: 1
+        flex: 1,
     },
     modalView: {
         flex: 1,
-        backgroundColor: "rgba(0,0,0,0.8)",
-        alignItems: "center",
-        justifyContent: "center"
+        backgroundColor: 'rgba(0,0,0,0.8)',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     text: {
-        color: "#fff",
+        color: '#fff',
         fontSize: 20,
-        textAlign: "center"
+        textAlign: 'center',
     },
     touchableButton: {
-        width: "70%",
+        width: '70%',
         padding: 10,
-        backgroundColor: "#f07373",
+        backgroundColor: '#f07373',
         marginBottom: 10,
-        marginTop: 30
+        marginTop: 30,
     },
     loading: {
-        paddingVertical: 50
+        paddingVertical: 50,
     },
     loadingModal: {
-        flex: 1
+        flex: 1,
     },
     loadingViewModal: {
         flex: 1,
-        backgroundColor: "rgba(0,0,0,0.7)",
-        alignItems: "center",
-        justifyContent: "center"
+        backgroundColor: 'rgba(0,0,0,0.7)',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     loadingIndicator: {
         // flex: 1,
         width: 100,
-        height: 100
-    }
+        height: 100,
+    },
 });
 
 export default function List() {
     const [loadingView, setLoadingView] = useState(true);
 
-    const [modalImage, setModalImage] = useState("");
+    const [modalImage, setModalImage] = useState('');
     const [modalVisibility, setModalVisibility] = useState(false);
 
-    const [breed, setBreed] = useState("chihuahua");
+    const [breed, setBreed] = useState('chihuahua');
     const [images, setImages] = useState([]);
     const [loadingImages, setLoadingImages] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
@@ -191,9 +191,9 @@ export default function List() {
                 <View style={styles.modalView}>
                     <Image
                         style={{
-                            width: "100%",
+                            width: '100%',
                             height: 400,
-                            resizeMode: "cover"
+                            resizeMode: 'cover',
                         }}
                         source={{ uri: modalImage }}
                     />

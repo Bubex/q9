@@ -1,88 +1,88 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
     KeyboardAvoidingView,
     View,
     Text,
     StyleSheet,
     TextInput,
-    TouchableOpacity
-} from "react-native";
-import PropTypes from "prop-types";
+    TouchableOpacity,
+} from 'react-native';
+import PropTypes from 'prop-types';
 
-import api from "../services/api";
+import api from '../services/api';
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center"
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     titleView: {
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center"
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     titlePart1: {
-        color: "#333333",
+        color: '#333333',
         fontSize: 40,
-        fontWeight: "700"
+        fontWeight: '700',
     },
     titlePart2: {
-        color: "#f07373",
+        color: '#f07373',
         fontSize: 40,
-        fontWeight: "700"
+        fontWeight: '700',
     },
     form: {
         marginTop: 80,
         paddingHorizontal: 70,
-        alignSelf: "stretch"
+        alignSelf: 'stretch',
     },
     label: {
-        fontWeight: "700",
-        textAlign: "left"
+        fontWeight: '700',
+        textAlign: 'left',
     },
     input: {
         marginTop: 5,
-        backgroundColor: "#f6f6f6",
+        backgroundColor: '#f6f6f6',
         borderWidth: 1,
-        borderColor: "#e3e3e3",
+        borderColor: '#e3e3e3',
         fontSize: 16,
         paddingVertical: 5,
-        paddingHorizontal: 10
+        paddingHorizontal: 10,
     },
     button: {
-        backgroundColor: "#f07373",
+        backgroundColor: '#f07373',
         marginTop: 10,
         padding: 20,
         flex: 1,
-        justifyContent: "center"
+        justifyContent: 'center',
     },
     buttonText: {
-        color: "white",
-        textAlign: "center",
-        fontWeight: "700",
-        fontSize: 15
-    }
+        color: 'white',
+        textAlign: 'center',
+        fontWeight: '700',
+        fontSize: 15,
+    },
 });
 
 export default function Register({ navigation }) {
-    const [email, setEmail] = useState("");
+    const [email, setEmail] = useState('');
 
     useEffect(() => {
         if (api.defaults.headers.Authorization) {
-            navigation.navigate("List");
+            navigation.navigate('List');
         }
     }, []);
 
     async function handleSubmit() {
-        const response = await api.post("/register", {
-            email
+        const response = await api.post('/register', {
+            email,
         });
 
         const { user } = response.data;
 
         api.defaults.headers.Authorization = user.token;
-        navigation.navigate("List");
+        navigation.navigate('List');
     }
 
     return (
@@ -113,6 +113,6 @@ export default function Register({ navigation }) {
 
 Register.propTypes = {
     navigation: PropTypes.shape({
-        navigate: PropTypes.func.isRequired
-    }).isRequired
+        navigate: PropTypes.func.isRequired,
+    }).isRequired,
 };
