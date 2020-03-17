@@ -76,7 +76,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     loadingIndicator: {
-        // flex: 1,
         width: 100,
         height: 100,
     },
@@ -117,17 +116,19 @@ export default function List() {
     function loadMoreImages() {
         if (loadingImages) return;
 
-        setLoadingImages(true);
-        setDisplayedImages(
-            displayedImages.concat(
-                images.slice(
-                    currentPage * sizePerPage,
-                    currentPage * sizePerPage + sizePerPage
+        if (displayedImages.length < images.length) {
+            setLoadingImages(true);
+            setDisplayedImages(
+                displayedImages.concat(
+                    images.slice(
+                        currentPage * sizePerPage,
+                        currentPage * sizePerPage + sizePerPage
+                    )
                 )
-            )
-        );
-        setCurrentPage(currentPage + 1);
-        setLoadingImages(false);
+            );
+            setCurrentPage(currentPage + 1);
+            setLoadingImages(false);
+        }
     }
 
     function renderFooter() {
@@ -158,7 +159,9 @@ export default function List() {
                 keyExtractor={(_displayedImages, index) => index.toString()}
                 onEndReached={loadMoreImages}
                 onEndReachedThreshold={0.05}
-                ListFooterComponent={renderFooter}
+                ListFooterComponent={
+                    displayedImages.length < images.length ? renderFooter : null
+                }
                 renderItem={({ item }) => (
                     <View style={styles.imageView}>
                         <TouchableOpacity
