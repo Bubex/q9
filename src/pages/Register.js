@@ -66,6 +66,7 @@ const styles = StyleSheet.create({
 });
 
 export default function Register({ navigation }) {
+    const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState('');
 
     useEffect(() => {
@@ -75,11 +76,13 @@ export default function Register({ navigation }) {
     }, []);
 
     async function handleSubmit() {
+        setLoading(true);
         const response = await api.post('/register', {
             email,
         });
 
         const { user } = response.data;
+        setLoading(false);
 
         api.defaults.headers.Authorization = user.token;
         navigation.navigate('List');
@@ -103,8 +106,14 @@ export default function Register({ navigation }) {
                     value={email}
                     onChangeText={setEmail}
                 />
-                <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-                    <Text style={styles.buttonText}>ENTRAR</Text>
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={handleSubmit}
+                    disabled={loading}
+                >
+                    <Text style={styles.buttonText}>
+                        {loading ? '...' : 'ENTRAR'}
+                    </Text>
                 </TouchableOpacity>
             </View>
         </KeyboardAvoidingView>
